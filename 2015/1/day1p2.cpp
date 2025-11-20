@@ -4,7 +4,7 @@
 using namespace std;
 
 int main() {
-	freopen("../input.txt", "r", stdin);
+	freopen("input.txt", "r", stdin);
 	string input;
 	cin >> input;
 	int floor = 0;
