@@ -13,3 +13,8 @@
 
 #ignore inputs (because user specific)
 **/input.txt
+build
+
+!run
+
+**/.vscode
