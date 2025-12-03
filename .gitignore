@@ -3,18 +3,18 @@
 
 # Unignore all with extensions
 !*.*
-
 # Unignore all dirs
 !*/
 
-
 # ignore idea
-.idea
+**/.idea
+
+
 
 #ignore inputs (because user specific)
 **/input.txt
+
+
 build
-
 !run
-
 **/.vscode

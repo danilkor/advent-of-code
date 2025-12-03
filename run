@@ -14,5 +14,6 @@ g++ "$script_dir/${year}/${day}/day${day}p${part}.cpp" -o "$script_dir/${year}/$
 (
     cd "$script_dir/$year/$day" || exit
     "./day${day}p${part}"
+    rm "./day${day}p${part}"
 )
 
