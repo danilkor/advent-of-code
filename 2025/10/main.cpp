@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cctype>
 #include <map>
+#include "z3++.h"
 
 using namespace std;
 
@@ -191,14 +192,87 @@ int solve_gaussian(vector<int> &target, vector<vector<int>> &buttons) {
             mx.at(buttons.at(i).at(j)).at(i) = 1;
         }
     }
-    // print_matrix(mx);
-    cout << "---------\n";
     matrix_to_row_echelon(mx);
-    // print_matrix(mx);
-    vector<int> ans;
-    print_matrix(mx);
     return 0;
 }
+int solve_z3(vector<int> &target, vector<vector<int>> &buttons) {
+    // Transform into matrix
+    vector<vector<int>> mx (target.size(), vector<int>(buttons.size()+1));
+
+    //set target in the matrix
+    for (int i = 0; i < target.size(); ++i) {
+        mx.at(i).at(mx.at(0).size()-1) = target.at(i);
+    }
+
+    // set buttons in the matrix
+    for (int i = 0; i < buttons.size(); ++i) {
+        for (int j = 0; j < buttons.at(i).size(); ++j) {
+            mx.at(buttons.at(i).at(j)).at(i) = 1;
+        }
+    }
+
+    z3::context ctx;
+    z3::expr_vector x(ctx);
+    z3::solver s(ctx);
+    // Create variables
+    vector<z3::expr> vars;
+    for (int i = 0; i < mx.size(); ++i) {
+        for (int j = 0; j < mx.at(0).size()-1; ++j) {
+            stringstream x_name;
+            x_name << "x_" << i << "_" << j;
+            x.push_back(ctx.int_const(x_name.str().c_str()));
+            s.add(x[x.size()-1] >= 0);
+            // cout << x_name.str() << "\t";
+        }
+        // cout << "\n";
+    }
+
+
+
+    // Vertical variables are equal
+    for (int i = 0; i < mx.at(0).size()-1; ++i) {
+        for (int j = 1; j < mx.size(); j++) {
+            s.add(x[(mx.at(0).size()-1)*j+i] == x[(mx.at(0).size()-1)*(j-1)+i]);
+        }
+    }
+
+    // Create conditions
+    for (int i = 0; i < mx.size(); ++i) {
+        z3::expr_vector eq(ctx);
+        for (int t = 0; t < mx.at(0).size()-1; ++t) {
+            if (mx.at(i).at(t) == 1) {
+                eq.push_back(x[(mx.at(0).size()-1)*i+t]);
+            }
+        }
+        s.add(z3::sum(eq) == mx.at(i).at(mx.at(0).size()-1));
+    }
+
+    int smallest_solution = 99999999;
+    z3::expr_vector fr(ctx);
+    for (int i = 0; i < mx.at(0).size()-1; ++i) {
+        fr.push_back(x[i]);
+    }
+    // s.add(z3::sum(fr) < 11);
+    // cout << s << "\n\n\n\n\n";
+    while (s.check() == z3::sat) {
+        auto model = s.get_model();
+        int sum = 0;
+        for (int i = 0; i < mx.at(0).size()-1; ++i) {
+            sum += model.eval(x[i]).as_int64();
+            // cout << model.eval(x[i]).as_int64() << " ";
+            // cout.flush();
+        }
+        // cout << "\n";
+        if (smallest_solution > sum) {
+            smallest_solution = sum;
+        }
+        s.add(z3::sum(fr) < smallest_solution);
+        // cout << s << "\n\n\n\n\n";
+    }
+
+    return smallest_solution;
+}
+
 
 
 
@@ -240,7 +314,7 @@ int p2(vector<string>& lines) {
             return a.size() > b.size();
         });
 
-        solve_gaussian(target, buttons);
+        sum += solve_z3(target, buttons);
     }
     return sum;
 }
@@ -248,13 +322,12 @@ int p2(vector<string>& lines) {
 
 
 int main() {
-    ifstream file("./example.txt");
+    ifstream file("./input.txt");
     string line;
     vector<string> input;
     while (std::getline(file, line)) {input.push_back(line);}
     cout << "Part 1: " << p1(input) << "\n";
-    cout << "Part 2: " << "\n" <<  p2(input) << "\n";
-
+    cout << "Part 2: " <<  p2(input) << "\n";
     return 0;
 }
 

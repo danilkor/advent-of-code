@@ -71,45 +71,39 @@ int p1(vector<string> &lines) {
     return result;
 }
 
-map<string, int> memo;
-
-// this one backtracks
-int dfs2(vector<vector<string>> &g, set<string> &visited, string pos) {
-    // if (memo.contains(pos)) {
-    //     cout << "used memo" << "\n";
-    //     return memo.at(pos);
-    // }
-    if (pos == "srv") {
-        if (visited.contains("fft") && visited.contains("dac")) {
+map<tuple<bool, bool, string>, long long> memo;
+long long dfs2(vector<vector<string>> &g, bool dac, bool fft, string pos) {
+    if (memo.contains(tuple(dac, fft, pos))) {
+        return memo.at(tuple(dac, fft, pos));
+    }
+    if (pos == "out") {
+        if (dac && fft) {
             return 1;
         }
         return 0;
     }
-    if (visited.contains(pos)) {
-        return 0;
-    }
-    visited.insert(pos);
-    int sum = 0;
-    for (int i = 0; i < g.size(); ++i) {
-        bool contains = false;
-        for (int j = 1; j < g.at(i).size(); ++j) {
-            if (g.at(i).at(j) == pos) {
-                contains = true;
-                break;
+    for (long long i = 0; i < g.size(); ++i) {
+        if (g.at(i).at(0) == pos) {
+            long long sum = 0;
+            for (long long j = 1; j < g.at(i).size(); ++j) {
+                if (g.at(i).at(j) == "dac") {
+                    sum += dfs2(g, true, fft, g.at(i).at(j));
+                } else if (g.at(i).at(j) == "fft") {
+                    sum += dfs2(g, dac, true, g.at(i).at(j));
+                } else {
+                    sum += dfs2(g, dac, fft, g.at(i).at(j));
+                }
             }
-        }
-        if (contains) {
-            sum += dfs2(g, visited, g.at(i).at(0));
+            memo.insert({tuple(dac, fft, pos), sum});
+            return sum;
         }
     }
-    visited.erase(pos);
-    memo.insert({pos, sum});
-    return sum;
+    return 0;
 }
 
-int p2(vector<string> &lines) {
+long long p2(vector<string> &lines) {
     vector<vector<string>> con;
-    for (int i = 0; i < lines.size(); ++i) {
+    for (long long i = 0; i < lines.size(); ++i) {
         string line = lines.at(i);
         ltrim(line); rtrim(line);
         vector<string> splt = split_string(line, ':');
@@ -123,24 +117,22 @@ int p2(vector<string> &lines) {
     }
 
     cout << "done connections" << "\n";
-    set<string> vis;
-    string pos = "out";
-    int result = dfs2(con, vis, pos);
+    string pos = "svr";
+    long long result = dfs2(con, false, false, pos);
     return result;
 }
 
 
-
 int main() {
-    ifstream file("./example.txt");
+    ifstream file("./input.txt");
     string line;
     vector<string> input;
     while (std::getline(file, line)) {input.push_back(line);}
 
     int p1r = p1(input);
-    // cout << "Part 1: " << p1r << "\n";
-    int p2r = p2(input);
     cout << "Part 1: " << p1r << "\n";
+    long long p2r = p2(input);
+    // cout << "Part 1: " << p1r << "\n";
     cout << "Part 2: " << p2r  << "\n";
     return 0;
 }
