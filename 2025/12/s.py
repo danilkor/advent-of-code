@@ -1,0 +1,1 @@
+print(len([c for c,d in zip([sum(map(int, line.split(":")[1].split()))*9 for line in open("./input.txt").readlines()], [__import__("math").prod(map(int, line.split(":")[0].split("x"))) for line in open("./input.txt").readlines()]) if c <= d]))

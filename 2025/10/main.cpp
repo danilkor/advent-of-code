@@ -321,8 +321,15 @@ int p2(vector<string>& lines) {
 
 
 
-int main() {
-    ifstream file("./input.txt");
+int main(int argc, char *argv[]) {
+    // string filename {"./input.txt"};
+    string filename {"./example.txt"};
+
+    if (argc > 1) {
+        filename = argv[1];
+    }
+
+    ifstream file(filename);
     string line;
     vector<string> input;
     while (std::getline(file, line)) {input.push_back(line);}
