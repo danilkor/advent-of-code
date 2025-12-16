@@ -124,15 +124,22 @@ long long p2(vector<string> &lines) {
 
 
 int main() {
+    time_t start, end;
+    time(&start);
     ifstream file("./input.txt");
     string line;
     vector<string> input;
     while (std::getline(file, line)) {input.push_back(line);}
+    ios_base::sync_with_stdio(false);
+    long long s1 = p1(input);
+    long long s2 = p2(input);
+    cout << "P1: " << s1 << endl;
+    cout << "P2: " << s2 << endl;
 
-    int p1r = p1(input);
-    cout << "Part 1: " << p1r << "\n";
-    long long p2r = p2(input);
-    // cout << "Part 1: " << p1r << "\n";
-    cout << "Part 2: " << p2r  << "\n";
+    time(&end);
+    double time_taken = double(end - start);
+    cout << endl << endl;
+    cout << "Time taken: " << fixed << time_taken << setprecision(10);
+    cout << " sec " << endl;
     return 0;
 }

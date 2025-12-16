@@ -13,7 +13,7 @@
 
 #ignore inputs (because user specific)
 **/input.txt
-
+inputs
 
 build
 !run
