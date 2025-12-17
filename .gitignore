@@ -5,7 +5,8 @@
 !*.*
 # Unignore all dirs
 !*/
-
+# Unignore template in cpp
+!cpp/template
 # ignore idea
 **/.idea
 

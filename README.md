@@ -1,11 +1,11 @@
 # My solutions to advent of code
 
-Some of solutions use different language, but to run c++ you need to compile a day you want with ```-std=c++23``` and ```-I cpp/libs```
+Some of the solutions use different language, but to run c++ you need to compile a day you want with ```-std=c++23``` and ```-I cpp/libs```
 
 
 ## Examples  
 (From *advent-of-code/builds*)
-- **Perfomance**
+- **Performances**
 ```
 g++ -O3 -std=c++23 -I ../cpp/libs -o a.out ../cpp/year/day.cpp
 ```  
